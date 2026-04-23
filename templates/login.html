@@ -5,6 +5,7 @@
     <h2>Welcome Back</h2>
     <p class="subtitle">Enter your credentials to access SJSU Library</p>
     
+    {# Basic login form that posts to the /login route #}
     <form method="POST" action="{{ url_for('login') }}">
         <div class="form-group">
             <label for="username">Username</label>

@@ -6,6 +6,7 @@ from functools import wraps
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 
 app = Flask(__name__)
+# This secret key is needed for session management and flash messages to work
 app.secret_key = 'super_secret_library_key'
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
@@ -30,10 +31,12 @@ def init_db():
         with open(USERS_FILE, 'w') as f:
             json.dump({}, f, indent=4)
 
+# Simple helper to read JSON data from our files
 def load_data(filepath):
     with open(filepath, 'r') as f:
         return json.load(f)
 
+# Helper to save our data back to the JSON files
 def save_data(filepath, data):
     with open(filepath, 'w') as f:
         json.dump(data, f, indent=4)
@@ -54,11 +57,12 @@ def require_permission(permission):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            # If there's no user in the session, they aren't logged in
             if 'user_id' not in session:
                 flash("Please log in to access this page.", "danger")
                 return redirect(url_for('login'))
             
-            users = load_data(USERS_FILE)
+            # Grabbing user data to check their roles
             user = users.get(session['user_id'])
             if not user:
                 session.clear()
@@ -123,6 +127,7 @@ def login():
             else:
                 flash("Invalid username or password.", "danger")
         else:
+            # User doesn't exist at all
             flash("Invalid username or password.", "danger")
             
     return render_template('login.html')
@@ -189,6 +194,7 @@ def dashboard():
     
     return render_template('dashboard.html', user=user)
 
+# Admin-only route to see the list of all users
 @app.route('/admin/users')
 @require_permission('manage_users')
 def manage_users():
@@ -217,5 +223,6 @@ def delete_user(user_id):
     return redirect(url_for('manage_users'))
 
 if __name__ == '__main__':
+    # Initialize our "database" and start the web server
     init_db()
     app.run(debug=True, port=5000)

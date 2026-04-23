@@ -11,6 +11,7 @@
 </div>
 
 <div class="grid">
+    {# General profile info for all users #}
     <div class="card">
         <h3>My Profile</h3>
         <p><strong>Status:</strong> {% if user.approved %} Active {% else %} Pending Approval {% endif %}</p>
@@ -25,6 +26,7 @@
         </ul>
     </div>
 
+    {# Only admins see this card because of the if-check #}
     {% if 'admin' in user.roles %}
     <div class="card admin-card">
         <h3>Admin Controls</h3>
@@ -33,6 +35,7 @@
     </div>
     {% endif %}
 
+    {# Librarians and Admins can both see the book management card #}
     {% if 'librarian' in user.roles or 'admin' in user.roles %}
     <div class="card librarian-card">
         <h3>Librarian Controls</h3>

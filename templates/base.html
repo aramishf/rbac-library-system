@@ -13,6 +13,7 @@
         <div class="container nav-content">
             <a href="/" class="brand">SJSU Library</a>
             <div class="nav-links">
+                {# Showing different links depending on if the user is logged in #}
                 {% if session.get('user_id') %}
                     <a href="{{ url_for('dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('logout') }}" class="btn-outline">Logout</a>
@@ -25,6 +26,7 @@
     </nav>
 
     <main class="container">
+        {# This section displays any success or error messages (flash messages) #}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flashes">

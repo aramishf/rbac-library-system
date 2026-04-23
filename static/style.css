@@ -1,3 +1,4 @@
+/* Defining our theme colors and glassmorphism variables here */
 :root {
     --bg-color: #0f172a;
     --text-primary: #f8fafc;
@@ -18,6 +19,7 @@
     padding: 0;
 }
 
+/* Setting up the body with a nice dark gradient background */
 body {
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
@@ -86,6 +88,7 @@ a:hover {
 }
 
 /* Glassmorphism Panels */
+/* This is the main "glass" look for our login and dashboard panels */
 .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
@@ -149,6 +152,7 @@ option {
 }
 
 /* Buttons */
+/* Styling for buttons with some nice hover gradients and shadows */
 .btn-primary, .btn-secondary, .btn-outline {
     display: inline-block;
     padding: 0.75rem 1.5rem;
