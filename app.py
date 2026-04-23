@@ -12,7 +12,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 USERS_FILE = os.path.join(DATA_DIR, 'users.json')
 ROLES_FILE = os.path.join(DATA_DIR, 'roles.json')
 
-# Initialize data files if they don't exist
+# Setting up the JSON files so the app has a place to store data
 def init_db():
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
@@ -38,22 +38,18 @@ def save_data(filepath, data):
     with open(filepath, 'w') as f:
         json.dump(data, f, indent=4)
 
-def hash_password(password, salt=None):
-    """
-    Hashes a password using SHA-256 with a salt.
-    Strengths: Salt prevents rainbow table attacks. Deterministic for same salt.
-    Weaknesses: SHA-256 is fast, so vulnerable to brute force if salt is known.
-    """
+# This function hashes the password using SHA-256 and adds a random salt.
+# The salt is important because it makes the hash unique even if two people use the same password.
     if salt is None:
         salt = uuid.uuid4().hex
     
-    # Encode password and salt
+    # Combining the password and salt then hashing it
     salted_password = password.encode('utf-8') + salt.encode('utf-8')
     password_hash = hashlib.sha256(salted_password).hexdigest()
     
     return password_hash, salt
 
-# Decorator for RBAC Authorization
+# A decorator to handle permissions - it checks if the user is allowed to see a page
 def require_permission(permission):
     def decorator(f):
         @wraps(f)
@@ -71,7 +67,7 @@ def require_permission(permission):
             roles = load_data(ROLES_FILE)
             user_roles = user.get('roles', [])
             
-            # Check if any of the user's roles have the required permission
+            # Loop through roles to see if any have the permission we need
             has_permission = False
             for role in user_roles:
                 if permission in roles.get(role, []):
@@ -100,7 +96,7 @@ def login():
         
         users = load_data(USERS_FILE)
         
-        # Find user
+        # Looking for the user by their username
         user_id = None
         user_data = None
         for uid, udata in users.items():
@@ -110,7 +106,7 @@ def login():
                 break
                 
         if user_data:
-            # Check password
+            # Verifying the password with the stored salt and hash
             salt = user_data['salt']
             stored_hash = user_data['password_hash']
             calc_hash, _ = hash_password(password, salt)
@@ -140,21 +136,20 @@ def register():
         
         users = load_data(USERS_FILE)
         
-        # Check if username exists
+        # Quick check to see if the username is already in use
         for uid, udata in users.items():
             if udata['username'] == username:
                 flash("Username already exists.", "danger")
                 return render_template('register.html')
         
-        # Provision user
+        # Setting up the new user and hashing their password
         user_id = str(uuid.uuid4())
         password_hash, salt = hash_password(password)
         
-        # Determine if approval is needed (e.g. admins/librarians need approval, students auto-approved)
+        # Only students are auto-approved, others need an admin to check them
         approved = True if role == 'student' else False
         
-        # In a real system, first user might automatically be admin, or created via CLI.
-        # For simplicity, if no admin exists, make the first admin approved automatically.
+        # If this is the very first admin, we auto-approve so we can actually use the system
         has_admin = any('admin' in u['roles'] for u in users.values())
         if not has_admin and role == 'admin':
             approved = True
