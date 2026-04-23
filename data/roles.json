@@ -1,0 +1,1 @@
+{"admin": ["manage_users", "manage_books", "borrow_books"], "librarian": ["manage_books", "borrow_books"], "student": ["borrow_books"]}

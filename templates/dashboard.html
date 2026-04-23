@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Welcome, {{ user.username }}</h1>
+    <div class="roles-badge">
+        {% for role in user.roles %}
+            <span class="badge">{{ role }}</span>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>My Profile</h3>
+        <p><strong>Status:</strong> {% if user.approved %} Active {% else %} Pending Approval {% endif %}</p>
+        <p><strong>System ID:</strong> {{ session.user_id[:8] }}...</p>
+    </div>
+
+    <div class="card">
+        <h3>Library Services</h3>
+        <ul class="action-list">
+            <li><a href="#" class="action-link">Browse Catalog</a></li>
+            <li><a href="#" class="action-link">My Borrowed Books</a></li>
+        </ul>
+    </div>
+
+    {% if 'admin' in user.roles %}
+    <div class="card admin-card">
+        <h3>Admin Controls</h3>
+        <p>Manage users and system settings.</p>
+        <a href="{{ url_for('manage_users') }}" class="btn-primary">Manage Users</a>
+    </div>
+    {% endif %}
+
+    {% if 'librarian' in user.roles or 'admin' in user.roles %}
+    <div class="card librarian-card">
+        <h3>Librarian Controls</h3>
+        <p>Manage library catalog.</p>
+        <a href="#" class="btn-secondary">Manage Books</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

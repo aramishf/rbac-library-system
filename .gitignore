@@ -1,0 +1,4 @@
+generate_screenshots.py
+*.png
+venv/
+__pycache__/

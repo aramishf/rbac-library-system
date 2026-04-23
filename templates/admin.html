@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-action">
+    <h2>User Management</h2>
+    <a href="{{ url_for('dashboard') }}" class="btn-outline">Back to Dashboard</a>
+</div>
+
+<div class="glass-panel mt-2">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>ID</th>
+                    <th>Roles</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for uid, u in users.items() %}
+                <tr>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td><span class="text-muted">{{ uid[:8] }}...</span></td>
+                    <td>
+                        {% for role in u.roles %}
+                            <span class="badge">{{ role }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if u.approved %}
+                            <span class="status-badge success">Active</span>
+                        {% else %}
+                            <span class="status-badge warning">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions-cell">
+                        {% if not u.approved %}
+                            <a href="{{ url_for('approve_user', user_id=uid) }}" class="btn-sm btn-success">Approve</a>
+                        {% endif %}
+                        {% if uid != session.user_id %}
+                            <a href="{{ url_for('delete_user', user_id=uid) }}" class="btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

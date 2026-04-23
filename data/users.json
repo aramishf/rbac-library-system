@@ -1,0 +1,20 @@
+{
+    "86f6c4e1-db40-4bd8-915e-bedd67b3e312": {
+        "username": "admin_user",
+        "password_hash": "fd4a85a112bae3e9dd508e1894d6c044bb04f38cef9f20565c50da888e0aa6e5",
+        "salt": "bb3e262afda94cac9c997641d3297d27",
+        "roles": [
+            "admin"
+        ],
+        "approved": true
+    },
+    "3536f3ae-222c-4001-bb5a-db8d0ad108cd": {
+        "username": "student_user",
+        "password_hash": "9764d1801bf4a7ef5f65be5124a84ecfff86c51db6c2c9cea95efc26474a04a4",
+        "salt": "88db876a52934d1cbab501c7aded61b9",
+        "roles": [
+            "student"
+        ],
+        "approved": true
+    }
+}
