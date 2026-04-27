@@ -12,6 +12,7 @@ app.secret_key = 'super_secret_library_key'
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 USERS_FILE = os.path.join(DATA_DIR, 'users.json')
 ROLES_FILE = os.path.join(DATA_DIR, 'roles.json')
+BOOKS_FILE = os.path.join(DATA_DIR, 'books.json')
 
 # Setting up the JSON files so the app has a place to store data
 def init_db():
@@ -30,6 +31,14 @@ def init_db():
     if not os.path.exists(USERS_FILE):
         with open(USERS_FILE, 'w') as f:
             json.dump({}, f, indent=4)
+            
+    if not os.path.exists(BOOKS_FILE):
+        books = {
+            "book_1": {"title": "Introduction to Information Security", "author": "Jason Andress", "status": "available"},
+            "book_2": {"title": "The Cuckoo's Egg", "author": "Cliff Stoll", "status": "available"}
+        }
+        with open(BOOKS_FILE, 'w') as f:
+            json.dump(books, f, indent=4)
 
 # Simple helper to read JSON data from our files
 def load_data(filepath):
@@ -43,6 +52,7 @@ def save_data(filepath, data):
 
 # This function hashes the password using SHA-256 and adds a random salt.
 # The salt is important because it makes the hash unique even if two people use the same password.
+def hash_password(password, salt=None):
     if salt is None:
         salt = uuid.uuid4().hex
     
@@ -63,6 +73,7 @@ def require_permission(permission):
                 return redirect(url_for('login'))
             
             # Grabbing user data to check their roles
+            users = load_data(USERS_FILE)
             user = users.get(session['user_id'])
             if not user:
                 session.clear()
@@ -221,6 +232,12 @@ def delete_user(user_id):
         save_data(USERS_FILE, users)
         flash(f"User {username} deleted.", "success")
     return redirect(url_for('manage_users'))
+
+@app.route('/catalog')
+@require_permission('borrow_books')
+def catalog():
+    books = load_data(BOOKS_FILE)
+    return render_template('catalog.html', books=books)
 
 if __name__ == '__main__':
     # Initialize our "database" and start the web server
